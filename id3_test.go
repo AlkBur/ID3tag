@@ -2,6 +2,7 @@ package ID3tag
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 )
 

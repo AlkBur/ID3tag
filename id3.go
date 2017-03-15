@@ -114,6 +114,10 @@ func (id3 *ID3) Path() string {
 	return id3.path
 }
 
+func (id3 *ID3) FileName() string {
+	return filepath.Base(id3.path)
+}
+
 func (id3 *ID3) Size() int64 {
 	return id3.size
 }
