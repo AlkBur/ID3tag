@@ -110,6 +110,14 @@ func (id3 *ID3) Year() string {
 	return decodeText(id3.year)
 }
 
+func (id3 *ID3) Path() string {
+	return id3.path
+}
+
+func (id3 *ID3) Size() int64 {
+	return id3.size
+}
+
 func ReadPath(path string) ([]*ID3, error) {
 	var ids []*ID3
 
