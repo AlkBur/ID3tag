@@ -32,8 +32,7 @@ type ID3 struct {
 	version string
 	subVer  int
 	size    int64
-	f       *os.File
-	Path    string
+	path    string
 
 	title   []byte //Название трека
 	artist  []byte //Исполнитель
@@ -45,31 +44,30 @@ type ID3 struct {
 }
 
 func New(f *os.File) (*ID3, error) {
-	id3 := &ID3{f: f}
-	err := id3.readTag()
+	id3 := &ID3{path: f.Name()}
+	err := id3.readTag(f)
 	if err != nil {
 		return nil, err
 	}
 	return id3, nil
 }
 
-func (id3 *ID3) readTag() error {
-	if info, err := id3.f.Stat(); err != nil {
+func (id3 *ID3) readTag(f *os.File) error {
+	if info, err := f.Stat(); err != nil {
 		return err
 	} else {
 		id3.size = info.Size()
 	}
-	id3.Path = id3.f.Name()
 	if id3.size < 128 {
 		return ErrorFormatID3
 	}
-	b, err := getBytesAt(id3.f, 0, 10)
+	b, err := getBytesAt(f, 0, 10)
 	if err != nil {
 		return err
 	}
 	marker := string(b[:3])
 	if marker != "ID3" {
-		b, err = getBytesAt(id3.f, id3.size-128, 128)
+		b, err = getBytesAt(f, id3.size-128, 128)
 		if err != nil {
 			return err
 		}
@@ -87,7 +85,7 @@ func (id3 *ID3) readTag() error {
 		xindicator := isBitSetAt(b[5], 5)
 		size := getIntWithoutBit(b[6:])
 
-		err = id3.readID3v2(size, unsynch, xheader, xindicator)
+		err = id3.readID3v2(f, size, unsynch, xheader, xindicator)
 	}
 	return err
 }

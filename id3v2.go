@@ -1,5 +1,7 @@
 package ID3tag
 
+import "io"
+
 var _shortcuts = map[string]string{
 	//Title
 	"TIT2": "Title",
@@ -30,7 +32,7 @@ var _shortcuts = map[string]string{
 	//"ULT":"Lyrics",
 }
 
-func (id3 *ID3) readID3v2(size int, unsynch, xheader, xindicator bool) error {
+func (id3 *ID3) readID3v2(f io.ReaderAt, size int, unsynch, xheader, xindicator bool) error {
 	if int64(size) > id3.size {
 		return ErrorFormatID3
 	}
@@ -45,7 +47,7 @@ func (id3 *ID3) readID3v2(size int, unsynch, xheader, xindicator bool) error {
 		if id3.subVer == 2 {
 			frameHeaderSize = 6
 		}
-		n, err := id3.f.ReadAt(b, offset)
+		n, err := f.ReadAt(b, offset)
 		if n < frameHeaderSize || err != nil {
 			return err
 		}
@@ -94,37 +96,37 @@ func (id3 *ID3) readID3v2(size int, unsynch, xheader, xindicator bool) error {
 
 		switch ids {
 		case "Title":
-			id3.title, err = getBytesAt(id3.f, iStart, frameSize)
+			id3.title, err = getBytesAt(f, iStart, frameSize)
 			if err != nil {
 				return err
 			}
 		case "Artist":
-			id3.artist, err = getBytesAt(id3.f, iStart, frameSize)
+			id3.artist, err = getBytesAt(f, iStart, frameSize)
 			if err != nil {
 				return err
 			}
 		case "Album":
-			id3.album, err = getBytesAt(id3.f, iStart, frameSize)
+			id3.album, err = getBytesAt(f, iStart, frameSize)
 			if err != nil {
 				return err
 			}
 		case "Year":
-			id3.year, err = getBytesAt(id3.f, iStart, frameSize)
+			id3.year, err = getBytesAt(f, iStart, frameSize)
 			if err != nil {
 				return err
 			}
 		case "Comment":
-			id3.comment, err = getBytesAt(id3.f, iStart, frameSize)
+			id3.comment, err = getBytesAt(f, iStart, frameSize)
 			if err != nil {
 				return err
 			}
 		case "Track":
-			id3.track, err = getBytesAt(id3.f, iStart, frameSize)
+			id3.track, err = getBytesAt(f, iStart, frameSize)
 			if err != nil {
 				return err
 			}
 		case "Genre":
-			id3.genre, err = getBytesAt(id3.f, iStart, frameSize)
+			id3.genre, err = getBytesAt(f, iStart, frameSize)
 			if err != nil {
 				return err
 			}
